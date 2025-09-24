@@ -6,15 +6,15 @@ test:
 
 .PHONY: typecheck
 typecheck:
-	$(run) mypy r2s
+	$(run) mypy r2s_gw
 
 .PHONY: format
 format:
-	$(run) black r2s
+	$(run) black r2s_gw
 
 .PHONY: format-check
 format-check:
-	$(run) black --check r2s
+	$(run) black --check r2s_gw
 
 .PHONY: setup
 setup:

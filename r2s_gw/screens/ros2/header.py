@@ -1,4 +1,4 @@
-from r2s.widgets.header import Header
+from r2s_gw.widgets.header import Header
 
 from textual.widgets import Static
 

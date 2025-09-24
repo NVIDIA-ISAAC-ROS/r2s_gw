@@ -14,8 +14,8 @@ from textual.screen import Screen
 from textual.widget import Widget
 from textual.widgets import DataTable
 
-from r2s.watcher import WatcherBase
-from r2s.widgets import DataGrid, Header
+from r2s_gw.watcher import WatcherBase
+from r2s_gw.widgets import DataGrid, Header
 
 
 @dataclass(frozen=True, eq=False)

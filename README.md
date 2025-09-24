@@ -1,10 +1,12 @@
-# r2s
+# r2s_gw
 
-r2s is a _Text User Interface_ (TUI) for interacting with various aspects of a ROS 2 system.
+**Note: This is a fork of [r2s](https://github.com/mjcarroll/r2s) designed to work with the Greenwave Monitor system. It has been renamed to r2s_gw to allow users to install it alongside the standard r2s package.**
+
+r2s_gw is a _Text User Interface_ (TUI) for interacting with various aspects of a ROS 2 system.
 It is intended as a supplement to the [ros2cli](https://github.com/ros2/ros2cli) suite of command line tools.
 
 
-r2s is written in Python and utilizes [Textual](https://github.com/textualize/textual/) for building the UI.
+r2s_gw is written in Python and utilizes [Textual](https://github.com/textualize/textual/) for building the UI.
 
 ![Alt Text](doc/r2s.gif)
 
@@ -17,7 +19,7 @@ To run:
 git clone https://github.com/mjcarroll/r2s.git
 cd r2s
 poetry install
-poetry run r2s
+poetry run r2s_gw
 ```
 
 ## Development
@@ -26,7 +28,7 @@ To run in development mode:
 
 ```
 poetry shell
-textual run --dev r2s.main:main
+textual run --dev r2s_gw.main:main
 ```
 
 ```

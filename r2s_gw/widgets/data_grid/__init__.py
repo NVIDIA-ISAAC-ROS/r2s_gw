@@ -8,7 +8,7 @@ from textual.containers import Horizontal
 from textual.reactive import reactive
 from textual.widgets import DataTable
 
-from r2s.widgets.find_dialog import FindDialog
+from r2s_gw.widgets.find_dialog import FindDialog
 
 
 class DataGrid(Horizontal):
@@ -18,32 +18,32 @@ class DataGrid(Horizontal):
         width: 1fr;
         padding-left: 1;
         padding-right: 1;
-        border: $success-lighten-1;
+        border: $success;
         border-title-align: center;
-        border-title-color: $success-lighten-1;
+        border-title-color: $success;
 
         .datagrid--title {
-            color: $success-lighten-1;
+            color: $success;
             text-style: bold;
         }
 
         .datagrid--title-filter {
-            color: $success-lighten-2;
+            color: $success;
             text-style: bold;
         }
 
         .datagrid--title-count {
-            color: $success-lighten-3;
+            color: $success;
             text-style: bold;
         }
 
         .datagrid--title-search {
-            color: $success-lighten-3;
+            color: $success;
             text-style: bold;
         }
 
         .datagrid--sorted-column-header {
-            color: $success-lighten-3;
+            color: $success;
             text-style: bold;
         }
 
@@ -137,7 +137,8 @@ class DataGrid(Horizontal):
             header_height=1,
             show_cursor=True,
             zebra_stripes=True,
-            cell_padding=5
+            cell_padding=5,
+            cursor_foreground_priority="renderable"
         )
         table.focus()
 
