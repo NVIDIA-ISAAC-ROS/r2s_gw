@@ -12,10 +12,11 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widget import Widget
 from textual.widgets import DataTable, Footer
+from textual.containers import Vertical
 
-from r2s.watcher import WatcherBase
-from r2s.widgets import DataGrid, Header
-from r2s.screens.ros2.header import RosHeader
+from r2s_gw.watcher import WatcherBase
+from r2s_gw.widgets import DataGrid, Header
+from r2s_gw.screens.ros2.header import RosHeader
 
 @dataclass(frozen=True, eq=False)
 class Interface:
@@ -27,7 +28,7 @@ class Interface:
 
 class InterfacesFetched(Message):
     def __init__(self, interface_list: List[Interface]) -> None:
-        self.interface_list = interface_list 
+        self.interface_list = interface_list
         super().__init__()
 
 
@@ -63,11 +64,12 @@ class InterfaceListWatcher(WatcherBase):
                         nodes.add(p.node_namespace + p.node_name)
                     else:
                         nodes.add(p.node_namespace + "/" + p.node_name)
+
                 interfaces.append(Interface(
                     name = t[0],
                     type = "topic",
                     interface = t[1][0],
-                    nodes = nodes
+                    nodes=nodes,
                 ))
 
             service_names_and_types = self.node.node.get_service_names_and_types()
@@ -77,7 +79,7 @@ class InterfaceListWatcher(WatcherBase):
                     name = s[0],
                     type = "service",
                     interface = s[1][0],
-                    nodes = {} 
+                    nodes={}
                 ))
 
             action_names_and_types = self.node.node.handle.get_action_names_and_types()
@@ -86,7 +88,7 @@ class InterfaceListWatcher(WatcherBase):
                     name = a[0],
                     type = "action",
                     interface = a[1][0],
-                    nodes = {} 
+                    nodes={}
                 ))
 
             self.target.post_message(InterfacesFetched(interfaces))
@@ -140,7 +142,7 @@ class InterfaceListGrid(DataGrid):
         self.populate_rows()
 
     def columns(self):
-        return ["Name", "Type", "Interface"]
+        return ["name", "type", "interface"]
 
     def populate_rows(self):
         table = self.query_one("#data_table", DataTable)
@@ -197,11 +199,7 @@ class InterfaceListGrid(DataGrid):
         message.stop()
         self.populate_rows()
 
-
-class InterfaceListScreen(Screen):
-    CSS = """
-    InterfaceListScreen {}
-    """
+class InterfaceListScreen(Vertical):
 
     filter_node: reactive[str] = reactive("")
 
@@ -218,5 +216,5 @@ class InterfaceListScreen(Screen):
 
     def compose(self) -> ComposeResult:
         yield RosHeader()
-        yield InterfaceListGrid().data_bind(InterfaceListScreen.filter_node)
+        yield InterfaceListGrid()
         yield Footer()

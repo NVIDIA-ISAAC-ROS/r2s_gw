@@ -12,18 +12,14 @@ from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widget import Widget
 from textual.widgets import DataTable, Footer
+from textual.containers import Vertical
 
-from r2s.watcher import WatcherBase
-from r2s.widgets import DataGrid, Header
-from r2s.screens.ros2.header import RosHeader
+from r2s_gw.watcher import WatcherBase
+from r2s_gw.widgets import DataGrid, Header
+from r2s_gw.screens.ros2.header import RosHeader
 
 import ros2node.api
 import ros2lifecycle.api
-
-class NodeSelected(Message):
-    def __init__(self, node_name: str) -> None:
-        self.node_name = node_name
-        super().__init__()
 
 @dataclass(frozen=True, eq=False)
 class Node:
@@ -183,20 +179,13 @@ class NodeListGrid(DataGrid):
                     table.update_cell(row_key=node.full_name, column_key="name", value=name)
         self.count = count
 
-    def on_data_table_row_selected(self, message: DataTable.RowSelected) -> None:
-        message.stop()
-        self.post_message(NodeSelected(node_name=message.row_key.value))
-
     def on_nodes_fetched(self, message: NodesFetched) -> None:
         self.nodes = message.node_list
         message.stop()
         self.populate_rows()
 
 
-class NodeListScreen(Screen):
-    CSS = """
-    PackageListScreen {}
-    """
+class NodeListScreen(Vertical):
 
     def __init__(self, node):
         self.watcher = NodeListWatcher(node)

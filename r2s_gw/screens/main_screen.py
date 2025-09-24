@@ -4,8 +4,8 @@ from textual import log
 from textual.app import ComposeResult
 from textual.screen import Screen
 
-from r2s.watcher import WatcherBase
-from r2s.widgets import DataGrid, Header
+from r2s_gw.watcher import WatcherBase
+from r2s_gw.widgets import DataGrid, Header
 
 
 class NodeWatcher(WatcherBase):
