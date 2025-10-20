@@ -2,39 +2,91 @@
 
 **Note: This is a fork of [r2s](https://github.com/mjcarroll/r2s) designed to work with the Greenwave Monitor system. It has been renamed to r2s_gw to allow users to install it alongside the standard r2s package.**
 
-r2s_gw is a _Text User Interface_ (TUI) for interacting with various aspects of a ROS 2 system.
-It is intended as a supplement to the [ros2cli](https://github.com/ros2/ros2cli) suite of command line tools.
-
+r2s_gw is a _Text User Interface_ (TUI) for interacting with various aspects of a ROS 2 system, with enhanced integration for [Greenwave Monitor](https://github.com/NVIDIA-ISAAC-ROS/greenwave_monitor) diagnostics.
 
 r2s_gw is written in Python and utilizes [Textual](https://github.com/textualize/textual/) for building the UI.
 
 ![Alt Text](doc/r2s.gif)
 
+## Dependencies
 
-## Installing
+r2s_gw depends on the [Greenwave Monitor](https://github.com/NVIDIA-ISAAC-ROS/greenwave_monitor) package. Make sure greenwave_monitor is installed first.
 
-This package is bundled with the Greenwave Monitor repository. See the main [Greenwave Monitor README](../README.md) for installation instructions.
+## Installation
 
-For standalone development:
+This package is distributed separately from Greenwave Monitor to keep dependencies minimal.
 
+### Install from source with colcon (recommended for ROS users):
+
+```bash
+cd ros_ws/src
+git clone https://github.com/NVIDIA-ISAAC-ROS/r2s_gw.git
+cd ../..
+colcon build --packages-up-to r2s_gw
+source install/setup.bash
 ```
+
+### Install from source with pip (for development):
+
+```bash
 cd r2s_gw
-poetry install
-poetry run r2s_gw
+pip install -e .
 ```
+
+## Usage
+
+Launch the r2s_gw dashboard (automatically starts greenwave_monitor):
+
+```bash
+ros2 run r2s_gw r2s_gw_dashboard
+```
+
+Or launch with demo publishers:
+
+```bash
+ros2 run r2s_gw r2s_gw_dashboard -- --demo
+```
+
+For more usage details, see the [Greenwave Monitor README](https://github.com/NVIDIA-ISAAC-ROS/greenwave_monitor).
 
 ## Development
 
-To run in development mode:
+To run in development mode with Textual's dev tools:
 
-```
-poetry shell
+```bash
+# In one terminal, run the textual console
+textual console
+
+# In another terminal, run the app in dev mode
 textual run --dev r2s_gw.main:main
 ```
 
+You can also run the UI directly (without the dashboard wrapper script):
+
+```bash
+# Make sure greenwave_monitor is already running
+ros2 run greenwave_monitor greenwave_monitor &
+
+# Then run the r2s_gw UI
+ros2 run r2s_gw r2s_gw
 ```
-poetry shell
-textual console
+
+## Testing
+
+Run tests with pytest:
+
+```bash
+# Install test dependencies
+pip install pytest pytest-asyncio
+
+# Run tests
+pytest tests/
+```
+
+Or use colcon:
+
+```bash
+colcon test --packages-select r2s_gw
 ```
 
 ## Roadmap
@@ -50,7 +102,7 @@ Currently, there are 2 primary widgets for visualizing information in a grid or 
   * Visualize message definitions (ros2 interface)
   * Call Services (ros2 service)
 * Colcon
-  * List packages in a workspace (colon list/colcon graph)
+  * List packages in a workspace (colcon list/colcon graph)
   * Select and build multiple packages
   * View package build logs
   * View test logs
