@@ -1,4 +1,4 @@
-from r2s_gw.ui import UI 
+from r2s_gw.ui import UI
 
 
 def main(*args, **kwargs):

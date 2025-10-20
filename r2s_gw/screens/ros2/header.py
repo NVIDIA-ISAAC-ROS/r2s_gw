@@ -18,6 +18,7 @@ INFO = """0.0.1
 {hostname}
 {workspace}"""
 
+
 class RosHeader(Header):
     def left(self):
         return Static(TITLES, classes="header-box")
@@ -33,6 +34,9 @@ class RosHeader(Header):
         workspace = os.getcwd()
         hostname = socket.gethostname()
 
-        return Static(INFO.format(
-            ros_version=ros_version, hostname=hostname, workspace=workspace
-        ), classes="header-box")
+        return Static(
+            INFO.format(
+                ros_version=ros_version, hostname=hostname, workspace=workspace
+            ),
+            classes="header-box",
+        )

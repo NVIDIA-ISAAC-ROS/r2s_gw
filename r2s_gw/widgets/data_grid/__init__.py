@@ -122,9 +122,11 @@ class DataGrid(Horizontal):
             partial=True,
         )
 
-        title = (Text(self.title, style=title_style) + 
-            Text(f" ({self.filter}) ", style=title_filter_style) +
-            Text(f"[{self.count}]", style=title_count_style))
+        title = (
+            Text(self.title, style=title_style)
+            + Text(f" ({self.filter}) ", style=title_filter_style)
+            + Text(f"[{self.count}]", style=title_count_style)
+        )
 
         if len(self.search):
             title = title + Text(f" <{str(self.search)}>", style=title_search_style)
@@ -138,7 +140,7 @@ class DataGrid(Horizontal):
             show_cursor=True,
             zebra_stripes=True,
             cell_padding=5,
-            cursor_foreground_priority="renderable"
+            cursor_foreground_priority="renderable",
         )
         table.focus()
 
@@ -150,7 +152,6 @@ class DataGrid(Horizontal):
         yield table
         yield FindDialog()
 
-
     def get_heading(self, column_idx: int, label: str) -> Text:
         sort_column = (
             self.sort_column_id if self._composed else self.default_sort_column_id
@@ -161,9 +162,7 @@ class DataGrid(Horizontal):
         )
         log(column_idx, sort_column)
         if column_idx == sort_column:
-            return Text(
-                label, style=sort_column_style
-            )
+            return Text(label, style=sort_column_style)
         else:
             return Text(label)
 
@@ -225,7 +224,7 @@ class DataGrid(Horizontal):
         for ii, col in enumerate(self.columns()):
             heading = self.get_heading(ii, col)
             log(ii, heading)
-            table.ordered_columns[ii].label = heading 
+            table.ordered_columns[ii].label = heading
 
         def sortable(v):
             if isinstance(v, Text):
@@ -233,4 +232,8 @@ class DataGrid(Horizontal):
             else:
                 return v
 
-        table.sort(table.ordered_columns[sort_column_id].key, key=sortable, reverse=self.reverse)
+        table.sort(
+            table.ordered_columns[sort_column_id].key,
+            key=sortable,
+            reverse=self.reverse,
+        )
