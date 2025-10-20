@@ -76,16 +76,20 @@ class TopicListWatcher(WatcherBase):
 
                 diagnostic = self.diagnostics_monitor.get_topic_diagnostics(t[0])
                 freq = diagnostic.pub_rate
-                expected_hz, tolerance = self.diagnostics_monitor.get_expected_frequency(t[0])
+                expected_hz, tolerance = (
+                    self.diagnostics_monitor.get_expected_frequency(t[0])
+                )
 
-                topics.append(Topic(
-                    name=t[0],
-                    msg_type=t[1][0],
-                    frequency=freq,
-                    status=diagnostic.status,
-                    expected_hz=expected_hz,
-                    tolerance=tolerance,
-                ))
+                topics.append(
+                    Topic(
+                        name=t[0],
+                        msg_type=t[1][0],
+                        frequency=freq,
+                        status=diagnostic.status,
+                        expected_hz=expected_hz,
+                        tolerance=tolerance,
+                    )
+                )
 
             self.target.post_message(TopicsFetched(topics))
             time.sleep(0.5)
@@ -132,7 +136,7 @@ class SetExpectedFrequencyWindow(ModalScreen):
         topic_name: str,
         diagnostics_monitor: GreenwaveUiAdaptor,
         expected_hz: str = "",
-        tolerance: str = ""
+        tolerance: str = "",
     ) -> None:
         self.topic_name = topic_name
         self.diagnostics_monitor = diagnostics_monitor
@@ -203,9 +207,7 @@ class SetExpectedFrequencyWindow(ModalScreen):
 
             # Response for SetExpectedFrequency service call
             success, message = self.diagnostics_monitor.set_expected_frequency(
-                self.topic_name,
-                expected_hz=frequency,
-                tolerance_percent=tolerance
+                self.topic_name, expected_hz=frequency, tolerance_percent=tolerance
             )
             if success:
                 self.dismiss()
@@ -239,7 +241,13 @@ class TopicListGrid(DataGrid):
         self.populate_rows()
 
     def columns(self):
-        return ["Topic Name", "Message Type", "Frequency", "Expected Frequency", "Status"]
+        return [
+            "Topic Name",
+            "Message Type",
+            "Frequency",
+            "Expected Frequency",
+            "Status",
+        ]
 
     def populate_rows(self):
         table = self.query_one("#data_table", DataTable)
@@ -260,8 +268,9 @@ class TopicListGrid(DataGrid):
 
             # Filter by node if specified
             if self.filter_node:
-                if not any(self.filter_node in pub for pub in topic.publishers) and \
-                   not any(self.filter_node in sub for sub in topic.subscribers):
+                if not any(
+                    self.filter_node in pub for pub in topic.publishers
+                ) and not any(self.filter_node in sub for sub in topic.subscribers):
                     prune = True
 
             expected_is_set = topic.expected_hz > 0.0
@@ -271,7 +280,9 @@ class TopicListGrid(DataGrid):
             msg_type = Text(topic.msg_type, style=row_style)
 
             if self.search:
-                name_highlighted = topic_name.highlight_words([self.search], filter_style)
+                name_highlighted = topic_name.highlight_words(
+                    [self.search], filter_style
+                )
                 type_highlighted = msg_type.highlight_words([self.search], filter_style)
                 if not name_highlighted and not type_highlighted:
                     prune = True
@@ -284,24 +295,45 @@ class TopicListGrid(DataGrid):
 
                 frequency = Text(topic.frequency, style=row_style)
                 expected_hz_text = Text(
-                    f"{topic.expected_hz:.2f} Hz ± {topic.tolerance:.0f}%" if expected_is_set else "-",
-                    style=row_style)
-                status_text = Text(topic.status if expected_is_set else "-", style=row_style)
+                    (
+                        f"{topic.expected_hz:.2f} Hz ± {topic.tolerance:.0f}%"
+                        if expected_is_set
+                        else "-"
+                    ),
+                    style=row_style,
+                )
+                status_text = Text(
+                    topic.status if expected_is_set else "-", style=row_style
+                )
 
                 if topic.name not in table.rows:
                     table.add_row(
-                        topic_name, msg_type, frequency,
-                        expected_hz_text, status_text,
-                        key=topic.name
+                        topic_name,
+                        msg_type,
+                        frequency,
+                        expected_hz_text,
+                        status_text,
+                        key=topic.name,
                     )
                 else:
-                    table.update_cell(row_key=topic.name, column_key="topic name", value=topic_name)
-                    table.update_cell(row_key=topic.name,
-                                      column_key="message type", value=msg_type)
-                    table.update_cell(row_key=topic.name, column_key="frequency", value=frequency)
-                    table.update_cell(row_key=topic.name, column_key="expected frequency",
-                                      value=expected_hz_text, update_width=True)
-                    table.update_cell(row_key=topic.name, column_key="status", value=status_text)
+                    table.update_cell(
+                        row_key=topic.name, column_key="topic name", value=topic_name
+                    )
+                    table.update_cell(
+                        row_key=topic.name, column_key="message type", value=msg_type
+                    )
+                    table.update_cell(
+                        row_key=topic.name, column_key="frequency", value=frequency
+                    )
+                    table.update_cell(
+                        row_key=topic.name,
+                        column_key="expected frequency",
+                        value=expected_hz_text,
+                        update_width=True,
+                    )
+                    table.update_cell(
+                        row_key=topic.name, column_key="status", value=status_text
+                    )
 
         self.count = count
 
@@ -324,10 +356,12 @@ class TopicListGrid(DataGrid):
         if row_key:
             topic_name = str(row_key.value)
             # Find the watcher through parent screen
-            if hasattr(
-                    self.parent, 'watcher') and hasattr(
-                    self.parent.watcher, 'diagnostics_monitor'):
-                self.parent.watcher.diagnostics_monitor.toggle_topic_monitoring(topic_name)
+            if hasattr(self.parent, "watcher") and hasattr(
+                self.parent.watcher, "diagnostics_monitor"
+            ):
+                self.parent.watcher.diagnostics_monitor.toggle_topic_monitoring(
+                    topic_name
+                )
                 print(f"Toggled monitoring for topic: {topic_name}")
 
     def action_manage_expected_frequency(self) -> None:
@@ -337,9 +371,9 @@ class TopicListGrid(DataGrid):
             return
 
         topic_name = str(row_key.value)
-        if hasattr(
-                self.parent, 'watcher') and hasattr(
-                self.parent.watcher, 'diagnostics_monitor'):
+        if hasattr(self.parent, "watcher") and hasattr(
+            self.parent.watcher, "diagnostics_monitor"
+        ):
             diagnostics_monitor = self.parent.watcher.diagnostics_monitor
         else:
             return

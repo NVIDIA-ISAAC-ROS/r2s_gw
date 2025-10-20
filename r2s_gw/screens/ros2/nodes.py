@@ -21,6 +21,7 @@ from r2s_gw.screens.ros2.header import RosHeader
 import ros2node.api
 import ros2lifecycle.api
 
+
 @dataclass(frozen=True, eq=False)
 class Node:
     namespace: str
@@ -63,18 +64,28 @@ class NodeListWatcher(WatcherBase):
                 node=self.node.node, node_names=lc_nodes
             )
 
-            lifecycle_node_transitions = ros2lifecycle.api.call_get_available_transitions(
-                node=self.node.node, states=lifecycle_node_states
+            lifecycle_node_transitions = (
+                ros2lifecycle.api.call_get_available_transitions(
+                    node=self.node.node, states=lifecycle_node_states
+                )
             )
 
             for t in node_names_and_namespaces:
                 hidden = t[0].startswith(ros2node.api.HIDDEN_NODE_PREFIX)
                 full_name = t[1] + ("" if t[1].endswith("/") else "/") + t[0]
-                subscribers = ros2node.api.get_subscriber_info(node=self.node.node, remote_node_name=full_name)
-                publishers = ros2node.api.get_publisher_info(node=self.node.node, remote_node_name=full_name)
+                subscribers = ros2node.api.get_subscriber_info(
+                    node=self.node.node, remote_node_name=full_name
+                )
+                publishers = ros2node.api.get_publisher_info(
+                    node=self.node.node, remote_node_name=full_name
+                )
 
-                service_servers = ros2node.api.get_service_server_info(node=self.node.node, remote_node_name=full_name)
-                service_clients = ros2node.api.get_service_client_info(node=self.node.node, remote_node_name=full_name)
+                service_servers = ros2node.api.get_service_server_info(
+                    node=self.node.node, remote_node_name=full_name
+                )
+                service_clients = ros2node.api.get_service_client_info(
+                    node=self.node.node, remote_node_name=full_name
+                )
 
                 state = None
                 transitions = []
@@ -96,8 +107,8 @@ class NodeListWatcher(WatcherBase):
                         publishers=len(publishers),
                         service_servers=len(service_servers),
                         service_clients=len(service_clients),
-                        state = state,
-                        transitions = []
+                        state=state,
+                        transitions=[],
                     )
                 )
 
@@ -106,9 +117,7 @@ class NodeListWatcher(WatcherBase):
 
 
 class NodeListGrid(DataGrid):
-    BINDINGS = [
-        Binding("h", "toggle_hidden", "Toggle Hidden")
-    ]
+    BINDINGS = [Binding("h", "toggle_hidden", "Toggle Hidden")]
 
     nodes: List[Node] = []
     title: reactive[str] = reactive("Nodes")
@@ -127,10 +136,15 @@ class NodeListGrid(DataGrid):
         self.populate_rows()
 
     def columns(self):
-        return ["Namespace", "Name", #"Full Name", 
-                "Subscribers", "Publishers", 
-                "Service Servers", "Service Clients",
-                "Lifecycle"]
+        return [
+            "Namespace",
+            "Name",  # "Full Name",
+            "Subscribers",
+            "Publishers",
+            "Service Servers",
+            "Service Clients",
+            "Lifecycle",
+        ]
 
     def populate_rows(self):
         table = self.query_one("#data_table", DataTable)
@@ -156,8 +170,9 @@ class NodeListGrid(DataGrid):
             name = Text(node.name)
 
             if self.search:
-                if (not ns.highlight_words([self.search], filter_style) and
-                    not name.highlight_words([self.search], filter_style)):
+                if not ns.highlight_words(
+                    [self.search], filter_style
+                ) and not name.highlight_words([self.search], filter_style):
                     prune = True
 
             if prune:
@@ -168,15 +183,22 @@ class NodeListGrid(DataGrid):
 
                 if node.full_name not in table.rows:
                     table.add_row(
-                        ns, name, #node.full_name, 
-                        node.subscribers, node.publishers, 
-                        node.service_servers, node.service_clients, 
+                        ns,
+                        name,  # node.full_name,
+                        node.subscribers,
+                        node.publishers,
+                        node.service_servers,
+                        node.service_clients,
                         node.state.label if node.state else "",
-                        key=node.full_name
+                        key=node.full_name,
                     )
                 else:
-                    table.update_cell(row_key=node.full_name, column_key="namespace", value=ns)
-                    table.update_cell(row_key=node.full_name, column_key="name", value=name)
+                    table.update_cell(
+                        row_key=node.full_name, column_key="namespace", value=ns
+                    )
+                    table.update_cell(
+                        row_key=node.full_name, column_key="name", value=name
+                    )
         self.count = count
 
     def on_nodes_fetched(self, message: NodesFetched) -> None:

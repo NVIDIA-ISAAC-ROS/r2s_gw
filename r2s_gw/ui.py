@@ -8,6 +8,7 @@ try:
     from r2s_gw.screens.ros2.nodes import NodeListScreen
     from r2s_gw.screens.ros2.interfaces import InterfaceListScreen
     from r2s_gw.screens.ros2.topics import TopicListScreen
+
     ROS_AVAILABLE = True
 except ImportError as ex:
     ROS_AVAILABLE = False

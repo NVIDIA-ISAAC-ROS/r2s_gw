@@ -18,6 +18,7 @@ from r2s_gw.watcher import WatcherBase
 from r2s_gw.widgets import DataGrid, Header
 from r2s_gw.screens.ros2.header import RosHeader
 
+
 @dataclass(frozen=True, eq=False)
 class Interface:
     name: str
@@ -25,6 +26,7 @@ class Interface:
     interface: str
     nodes: Set
     hidden: bool = False
+
 
 class InterfacesFetched(Message):
     def __init__(self, interface_list: List[Interface]) -> None:
@@ -65,31 +67,27 @@ class InterfaceListWatcher(WatcherBase):
                     else:
                         nodes.add(p.node_namespace + "/" + p.node_name)
 
-                interfaces.append(Interface(
-                    name = t[0],
-                    type = "topic",
-                    interface = t[1][0],
-                    nodes=nodes,
-                ))
+                interfaces.append(
+                    Interface(
+                        name=t[0],
+                        type="topic",
+                        interface=t[1][0],
+                        nodes=nodes,
+                    )
+                )
 
             service_names_and_types = self.node.node.get_service_names_and_types()
 
             for s in service_names_and_types:
-                interfaces.append(Interface(
-                    name = s[0],
-                    type = "service",
-                    interface = s[1][0],
-                    nodes={}
-                ))
+                interfaces.append(
+                    Interface(name=s[0], type="service", interface=s[1][0], nodes={})
+                )
 
             action_names_and_types = self.node.node.handle.get_action_names_and_types()
             for a in action_names_and_types:
-                interfaces.append(Interface(
-                    name = a[0],
-                    type = "action",
-                    interface = a[1][0],
-                    nodes={}
-                ))
+                interfaces.append(
+                    Interface(name=a[0], type="action", interface=a[1][0], nodes={})
+                )
 
             self.target.post_message(InterfacesFetched(interfaces))
             time.sleep(0.5)
@@ -98,7 +96,7 @@ class InterfaceListWatcher(WatcherBase):
 class InterfaceListGrid(DataGrid):
     BINDINGS = [
         Binding("h", "toggle_hidden", "Toggle Hidden"),
-        Binding("t", "toggle_type", "Toggle Type")
+        Binding("t", "toggle_type", "Toggle Type"),
     ]
 
     interfaces: List[Interface] = []
@@ -174,8 +172,9 @@ class InterfaceListGrid(DataGrid):
             iface = Text(interface.interface)
 
             if self.search:
-                if (not name.highlight_words([self.search], filter_style) and
-                    not iface.highlight_words([self.search], filter_style)):
+                if not name.highlight_words(
+                    [self.search], filter_style
+                ) and not iface.highlight_words([self.search], filter_style):
                     prune = True
 
             if prune:
@@ -185,19 +184,21 @@ class InterfaceListGrid(DataGrid):
                 count = count + 1
 
                 if interface.name not in table.rows:
-                    table.add_row(
-                        name, interface.type, iface,
-                        key=interface.name
-                    )
+                    table.add_row(name, interface.type, iface, key=interface.name)
                 else:
-                    table.update_cell(row_key=interface.name, column_key="name", value=name)
-                    table.update_cell(row_key=interface.name, column_key="interface", value=iface)
+                    table.update_cell(
+                        row_key=interface.name, column_key="name", value=name
+                    )
+                    table.update_cell(
+                        row_key=interface.name, column_key="interface", value=iface
+                    )
         self.count = count
 
     def on_interfaces_fetched(self, message: InterfacesFetched) -> None:
         self.interfaces = message.interface_list
         message.stop()
         self.populate_rows()
+
 
 class InterfaceListScreen(Vertical):
 

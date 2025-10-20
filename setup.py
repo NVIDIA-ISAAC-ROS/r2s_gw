@@ -22,6 +22,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name, ['README.md']),
         ('share/' + package_name, ['requirements.txt']),
+        ('lib/' + package_name, ['scripts/r2s_gw_dashboard']),
     ],
     install_requires=requirements,
     extras_require={
